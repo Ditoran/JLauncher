@@ -1,5 +1,6 @@
 package im.jahnke.jlauncher.util;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -29,11 +30,21 @@ public class UnzipTest {
 
 	@Test
 	void testUnzipWithOneFile() throws MalformedURLException, URISyntaxException {
-
 		File downloadedFile = new File("test-res\\one-file.zip");
 		Unzip.unzipFileToFolder(downloadedFile, new File("."));
 		File extractedFile = new File("100mb.bin");
 		assertTrue("File does not exist", extractedFile.exists());
+	}
+
+	@Test
+	void testUnzipWithErroneousFile() throws MalformedURLException, URISyntaxException {
+		assertFalse("Expected an error while extracting",
+				Unzip.unzipFileToFolder(new File("test-res\\one-file-not-existing.zip"), new File(".")));
+
+		assertFalse("Expected an error while extracting", Unzip.unzipFileToFolder(new File("./"), new File(".")));
+
+		assertFalse("Expected an error while extracting",
+				Unzip.unzipFileToFolder(new File("test-res\\one-file.zip"), new File("./notexistingfolder")));
 	}
 
 }
