@@ -8,6 +8,7 @@ import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 import im.jahnke.jlauncher.gui.SplashScreenViewer;
+import im.jahnke.jlauncher.util.ChecksumException;
 
 public class JLauncher {
 
@@ -18,10 +19,19 @@ public class JLauncher {
 	public static void main(String[] args) {
 		SwingUtilities.invokeLater(() -> {
 			ConfigurationManager configManager = new ConfigurationManager(configFile);
-			AppUpdater updater = new AppUpdater();
-			if (updater.isUpdateAvailable(configManager)) {
-				JOptionPane.showConfirmDialog(null, "Update available. Download now?", "Update",
-						JOptionPane.YES_NO_OPTION);
+			String version = configManager.getProperty("version");
+			String updateFile = configManager.getProperty("updatefile");
+			AppUpdater updater = new AppUpdater(version, updateFile);
+			if (updater.isUpdateAvailable()) {
+				if (JOptionPane.showConfirmDialog(null, "Update available. Download now?", "Update",
+						JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+					try {
+						updater.downloadUpdate();
+						updater.installUpdate();
+					} catch (MalformedURLException | ChecksumException e) {
+						log.log(Level.SEVERE, e.getMessage(), e);
+					}
+				}
 			}
 			SplashScreenViewer splashScreenViewer = new SplashScreenViewer(configManager);
 			try {

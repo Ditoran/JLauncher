@@ -8,18 +8,18 @@ public class UpdateFileMetadata {
 
 	public void parseMetadata(String text) {
 		for (String line : text.split(System.lineSeparator())) {
-			String[] splitRow = line.split(":");
+			String[] splitRow = line.split(":", 2);
 			String parameter = splitRow[0];
 			String value = splitRow[1];
 			switch (parameter) {
 			case "updatefile":
-				updateFileName = value;
+				updateFileName = value.trim();
 				break;
 			case "checksum":
-				checksum = value;
+				checksum = value.trim();
 				break;
 			case "version":
-				version = value;
+				version = value.trim();
 				break;
 			default:
 				break;
